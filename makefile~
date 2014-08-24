@@ -1,0 +1,4 @@
+all: Network.class
+
+Network.class:
+	javac -cp ./bin/ ./src/rhobits/Network.java -d ./bin/
