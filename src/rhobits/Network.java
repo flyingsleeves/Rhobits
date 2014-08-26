@@ -58,6 +58,14 @@ public class Network
         this.outputLayer = l;
     }
 
+    private void connectLayers()
+    {
+        for (int i = 0; i < this.layerList.size() - 1; i++)
+        {
+            this.layerList.get(i).connectToLayer(this.layerList.get(i + 1));
+        }
+    }
+
     private void build3LayerNet(int sizeL1, int sizeL2, int sizeL3)
     {
         this.layerList.clear();
