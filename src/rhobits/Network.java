@@ -47,6 +47,17 @@ public class Network
         this.present(input4);
     }
 
+    private void addLayer(int numNeurons)
+    {
+        Layer l = new Layer(numNeurons);
+        this.layerList.add(l);
+
+        if (this.layerList.size() == 1)
+            this.inputLayer = l;
+
+        this.outputLayer = l;
+    }
+
     private void build3LayerNet(int sizeL1, int sizeL2, int sizeL3)
     {
         this.layerList.clear();
