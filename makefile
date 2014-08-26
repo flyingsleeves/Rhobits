@@ -1,5 +1,8 @@
 all: Network Layer NeuronAndConnection
 
+run: Network Layer NeuronAndConnection
+	java -cp ./bin/ rhobits.Network
+
 clean:
 	rm ./bin/rhobits/*.class
 

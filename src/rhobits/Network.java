@@ -10,6 +10,9 @@ public class Network
     private Layer inputLayer;
     private Layer outputLayer;
     private ArrayList<Layer> layerList = new ArrayList<Layer>();
+    private double globalError = 0;
+    private double errorSetSize = 0;
+    private ArrayList<Double> outputList = new ArrayList<Double>();
 
     // Constructors
     public Network() { }
@@ -23,7 +26,9 @@ public class Network
 
     private void test()
     {
+        System.out.println("____________");
         System.out.println("Network Test");
+        System.out.println("____________");
 
         this.build3LayerNet(2, 2, 1);
 
@@ -44,7 +49,7 @@ public class Network
 
     private void build3LayerNet(int sizeL1, int sizeL2, int sizeL3)
     {
-        this.layerList = new ArrayList<Layer>();
+        this.layerList.clear();
 
         Layer l1 = new Layer(sizeL1);
         Layer l2 = new Layer(sizeL2);
@@ -58,6 +63,13 @@ public class Network
 
         l1.connectToLayer(l2);
         l2.connectToLayer(l3);
+    }
+
+    // Randomize all weights and thresholds in the network
+    private void randomizeAll()
+    {
+        for (Layer l : this.layerList)
+            l.randomizeAll();
     }
 
     private void present(double[] pattern)
@@ -81,38 +93,70 @@ public class Network
             l.fire();
         }
 
-        this.outputLayer.printNeuronOutputs();
+        //this.outputLayer.printNeuronOutputs();
+        this.outputList.clear();
+        for (Neuron n : this.outputLayer.getNeuronList())
+            this.outputList.add(n.getOutput());
+
+        for (Double d : this.outputList)
+            System.out.printf("(%.1f) ", d);
+
         System.out.println();
     }
 
-/*    private double calculateError(double actual[][], double ideal[][])
+    private void train(double[] pattern, double[] ideal)
     {
-        double globalError = 0;
-        double setSize = 0;
-
-        for (int i = 0; i < actual.length; i++)
+        if (pattern.length != inputLayer.getSize())
         {
-            for (int j = 0; j < actual[i].length; j++)
-            {
-                double delta = ideal[j] - actual[j];
-                globalError += delta * delta;
-                setSize += actual.length;
-            }
+            System.out.println("Pattern size != number of input neurons");
+            return;
         }
-    }*/
 
-    private void reset()
-    {
+        System.out.print("Presenting [ ");
+        for (int i = 0; i < pattern.length; i++)
+        {
+            System.out.print(pattern[i] + " ");
+            inputLayer.getNeuronList().get(i).addToInput(pattern[i]);
+        }
+        System.out.println("]");
+
         for (Layer l : this.layerList)
-            l.reset();
+        {
+            l.fire();
+        }
+
+        //this.outputLayer.printNeuronOutputs();
+        this.outputList.clear();
+        for (Neuron n : this.outputLayer.getNeuronList())
+            this.outputList.add(n.getOutput());
+
+        for (Double d : this.outputList)
+            System.out.printf("(%.1f) ", d);
+
+        System.out.println();
     }
 
-    private void randomizeAll()
+    private double calculateRMS() 
     {
-        for (Layer l : this.layerList)
-            l.randomizeAll();
+        return Math.sqrt(this.globalError / this.errorSetSize);
     }
 
+    private void accumulateError(ArrayList<Double> output, ArrayList<Double> ideal)
+    {
+        for (int i = 0; i < output.size(); i++)
+        {
+            this.globalError += Math.pow(output.get(i) - ideal.get(i), 2);
+            this.errorSetSize += output.size();    
+        }
+    }
+
+    private void resetError()
+    {
+        this.globalError = 0;
+        this.errorSetSize = 0;
+    }
+
+    // Printing Methods
     private void printLayers()
     {
         System.out.println();

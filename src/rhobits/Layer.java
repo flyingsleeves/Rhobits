@@ -6,7 +6,7 @@ public class Layer
 {
     // Class Variables
     private static int totalLayers = 0;
-    private int id = 0;
+    final private int id;
     private ArrayList<Neuron> neuronList = new ArrayList<Neuron>();
     private int numNeurons;
 
@@ -53,7 +53,7 @@ public class Layer
         for (Neuron n1 : this.neuronList)
         {
             for (Neuron n2 : toLayer.getNeuronList())
-                n1.addOutConnection(n2);
+                n1.addOutNeuron(n2);
         }
     }
 
@@ -61,12 +61,6 @@ public class Layer
     {
         for (Neuron n : this.neuronList)
             n.fire();
-    }
-
-    public void reset()
-    {
-        for (Neuron n : this.neuronList)
-            n.reset();
     }
 
     public void randomizeAll()
@@ -81,9 +75,9 @@ public class Layer
         for (Neuron n : this.neuronList)
         {
             System.out.print("Neuron " + n.getId() + ": t = ");
-            System.out.printf("%.2f ->", n.getThreshold());
-            n.printOutConnections();
-            System.out.println();
+            System.out.printf("%.2f", n.getThreshold());
+            n.printConnections();
+            //System.out.println();
         }
         System.out.println("-------------");
         System.out.println();

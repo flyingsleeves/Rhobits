@@ -7,7 +7,7 @@ public class Neuron
 {
     // Class Variables
     private static int totalNeurons = 0;
-    private int id;
+    final private int id;
     private double threshold = 0;
     private double input = 0;
     private double output = 0;
@@ -46,15 +46,27 @@ public class Neuron
         return this.output;
     }
 
-    public void addOutConnection(Neuron out)
+    public void addOutNeuron(Neuron out)
     {
         Connection c = new Connection(this, out);
         this.outConnectionList.add(c);
+        out.addInConnection(c);
     }
 
-    public void addInConnection(Neuron in)
+    public void addInNeuron(Neuron in)
     {
         Connection c = new Connection(in, this);
+        this.inConnectionList.add(c);
+        in.addOutConnection(c);
+    }
+
+    public void addOutConnection(Connection c)
+    {
+        this.outConnectionList.add(c);
+    }
+
+    public void addInConnection(Connection c)
+    {
         this.inConnectionList.add(c);
     }
 
@@ -86,11 +98,6 @@ public class Neuron
         this.input = 0;
     }
 
-    private double derivativeTanh(double d)
-    {
-        return (1.0 - Math.pow(Math.tanh(d), 2.0));
-    }
-
     private void computeOutput(double i)
     {
         this.output = Math.tanh(i);
@@ -105,18 +112,22 @@ public class Neuron
         }
     }
 
-    public void reset()
+    public void printConnections()
     {
-        this.input = 0;
-        this.output = 0;
-    }
-
-    public void printOutConnections()
-    {
+        System.out.printf("%n  OUT -> ");
         for (Connection c : this.outConnectionList)
         {
-            System.out.print(" (N" + c.getToNeuron().getId() + ", ");
-            System.out.format("%.2f)", c.getWeight());
+            System.out.print("(N" + c.getToNeuron().getId() + ", ");
+            System.out.format("%.2f) ", c.getWeight());
         }
+        System.out.println();
+
+        System.out.printf("  IN  <- ");
+        for (Connection c : this.inConnectionList)
+        {
+            System.out.print("(N" + c.getFromNeuron().getId() + ", ");
+            System.out.format("%.2f) ", c.getWeight());
+        }
+        System.out.println();
     }
 }
